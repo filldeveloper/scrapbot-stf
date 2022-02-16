@@ -163,3 +163,4 @@ with open(nome_arquivo, 'w', encoding='utf-8') as txt:
 chrome.close()
 print('\nPressione Ctrl + C para finalizar o programa!')
 
+# Developed by Felipe Barreto da Silva
