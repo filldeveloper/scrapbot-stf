@@ -66,14 +66,13 @@ JavaScript error: https://www.paypal.com/sdk/js?client-id=AeuUyDUbnlHJnLRfnK2RUS
 JavaScript error: https://www.paypal.com/sdk/js?client-id=AeuUyDUbnlHJnLRfnK2RUSl4BlaVSyRtBpoaak7YeCyZv1dcFjAAgWHUTiGAmRCDfkCwLaOrHgdT2Apv&vault=true&currency=EUR, line 2: Error: Component closed
 JavaScript error: https://www.paypal.com/sdk/js?client-id=AeuUyDUbnlHJnLRfnK2RUSl4BlaVSyRtBpoaak7YeCyZv1dcFjAAgWHUTiGAmRCDfkCwLaOrHgdT2Apv&vault=true&currency=EUR, line 2: Error: Component closed
 JavaScript error: , line 0: NS_ERROR_NOT_AVAILABLE
-utdownVR) Channel closing: too late to send/recv, messages will be lost
-
-1644939114596	geckodriver	INFO	Listening on 127.0.0.1:53315
-1644939117638	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\felip\\AppData\\Local\\Temp\\rust_mozprofile66jlpB"
-1644939118075	Marionette	INFO	Marionette enabled
-console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at C:\\Users\\felip\\AppData\\Local\\Temp\\rust_mozprofile66jlpB\\search.json.mozlz4", (void 0)))
-1644939120365	Marionette	INFO	Listening on port 53323
-1644939120847	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+JavaScript error: resource://gre/modules/AsyncShutdown.jsm, line 575: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: resource://gre/modules/AsyncShutdown.jsm, line 575: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+1644968338720	Marionette	INFO	Stopped listening on port 51250
+[Parent 5464, IPC I/O Parent] WARNING: file /builds/worker/checkouts/gecko/ipc/chromium/src/base/process_util_win.cc:167
+[Parent 5464, IPC I/O Parent] WARNING: file /builds/worker/checkouts/gecko/ipc/chromium/src/base/process_util_win.cc:167
+[Parent 5464, IPC I/O Parent] WARNING: file /builds/worker/checkouts/gecko/ipc/chromium/src/base/process_util_win.cc:167
+7	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
 1644939133490	Marionette	INFO	Stopped listening on port 53323
 
 ###!!! [Parent][PGPUParent] Error: RunMessage(msgname=PGPU::Msg_ShutdownVR) Channel closing: too late to send/recv, messages will be lost
