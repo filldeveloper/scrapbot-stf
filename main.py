@@ -49,9 +49,9 @@ while  validar:
 
 options = webdriver.ChromeOptions()
 options.add_argument('--log-level=3')
-options.add_argument("--headless")
-options.add_argument('--no-sandbox')
-options.add_argument('--disable-dev-shm-usage')
+# options.add_argument("--headless")
+# options.add_argument('--no-sandbox')
+# options.add_argument('--disable-dev-shm-usage')
 
 
 chrome = webdriver.Chrome(options=options)
@@ -60,7 +60,7 @@ chrome.get(url)
 sleep(5)
 
 # Abrir arquivo
-nome_arquivo = f'C:/SEI-DJ/STF/STF-{ano}-{mes}-{dia}.txt'
+nome_arquivo = f'C:/sei-dj/stf/STF-{ano}-{mes}-{dia}.txt'
 with open(nome_arquivo, 'w', encoding='utf-8') as txt:
     # Definir a data
     elem = chrome.find_element_by_xpath(
@@ -107,14 +107,18 @@ with open(nome_arquivo, 'w', encoding='utf-8') as txt:
         for elem in elementos:
             html_content_elem = elem.get_attribute('outerHTML')
             soup_elem= BeautifulSoup(html_content_elem, 'html.parser')
-            cabecalho = soup_elem.get_text()
+            cabecalho = soup_elem.get_text('\n')
 
-            if 'Apresentando de 1 até' in cabecalho:
+            if 'Apresentando de' in cabecalho and 'registros' in cabecalho:
                 continue
             
             # método para remover o /xa0
             novo_cabecalho = unicodedata.normalize("NFKD", cabecalho)
-            txt.write(novo_cabecalho + "\n")
+
+            if not novo_cabecalho:
+                continue
+            
+            txt.write(f'<P>{novo_cabecalho}')
             # pprint(novo_cabecalho)
 
             try:
