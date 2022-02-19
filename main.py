@@ -5,6 +5,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
+from functions import *
 from time import sleep
 import sys
 import os
@@ -97,7 +98,8 @@ with open(nome_arquivo, 'w', encoding='utf-8') as txt:
     for number in range(range_loop):
 
         # Pegar Conteúdo da página
-        elementos = chrome.find_elements_by_class_name('white-bg')
+        elementos = chrome.find_elements_by_class_name('publicacoes')
+    
 
         # Função que busca o texto escondido em shadow
         # shadow_section = chrome.find_elements_by_class_name(
@@ -105,34 +107,52 @@ with open(nome_arquivo, 'w', encoding='utf-8') as txt:
         #     )
 
         for elem in elementos:
-            html_content_elem = elem.get_attribute('outerHTML')
-            soup_elem= BeautifulSoup(html_content_elem, 'html.parser')
-            cabecalho = soup_elem.get_text('\n')
 
-            if 'Apresentando de' in cabecalho and 'registros' in cabecalho:
-                continue
+            # if 'Apresentando de' in cabecalho and 'registros' in cabecalho:
+            #     continue
             
             # método para remover o /xa0
-            novo_cabecalho = unicodedata.normalize("NFKD", cabecalho)
+            # novo_cabecalho = unicodedata.normalize("NFKD", cabecalho)
 
-            if not novo_cabecalho:
-                continue
             
-            txt.write(f'<P>{novo_cabecalho}')
-            # pprint(novo_cabecalho)
+            # Pegar número do processo
+            processo = elem.find_element(By.CLASS_NAME, 'processo')
+            text_processo = outer_html(processo)
 
+            if not text_processo:
+                continue
+            # Após os testes substituir o print por txt.write()
+            txt.write(f'<P>{text_processo}' + "\n")
+            
+            # Pegar os dados do relator
+            relator = elem.find_element(By.CLASS_NAME, 'relator')
+            text_relator = outer_html(relator)
+            txt.write(text_relator + "\n")
+
+            # Pegar a data do despacho
+            despacho = elem.find_element(
+                By.XPATH, '//*[@id="conteudo"]/div[2]/md-content/div[2]/div[1]/div[2]'
+                )
+            text_despacho = outer_html(despacho)
+            txt.write(text_despacho + "\n")
+
+            # Pegar os dados dos envolvidos no processo
+            envolvidos = elem.find_elements(By.CLASS_NAME, 'envolvido')
+            for envolvido in envolvidos:
+                text_envolvido = outer_html(envolvido)
+                txt.write(text_envolvido + "\n")
+            
             try:
                 # Função que busca o texto escondido em shadow
                 shadow_section = elem.find_element_by_class_name('shadow')
             except:
                 continue
-        
+
             shadow_root_dict = chrome.execute_script(
                 "return arguments[0].shadowRoot", shadow_section
                 )
             shadow_root_id = shadow_root_dict['shadow-6066-11e4-a52e-4f735466cecf']
             shadow_root = WebElement(chrome, shadow_root_id, w3c=True)
-
             content_html = shadow_root.find_elements(
                 By.TAG_NAME, 'p'
                 )
@@ -143,11 +163,13 @@ with open(nome_arquivo, 'w', encoding='utf-8') as txt:
                 soup = BeautifulSoup(html_content, 'html.parser')
                 texto = soup.get_text()
 
+                if len(texto) < 3:
+                    continue
                 # método para remover o /xa0
                 novo_texto = unicodedata.normalize("NFKD", texto)
                 txt.write(novo_texto + "\n")
-                # pprint(novo_texto)
-
+                # print(novo_texto)
+            
         # Display on the screen the number of pages recorded
         print(f'Página {count} gravada!')
 
