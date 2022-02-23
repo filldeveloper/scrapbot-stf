@@ -11,6 +11,7 @@ import sys
 import os
 import math
 import unicodedata
+import pandas as pd
 from pprint import pprint
 
 url = 'https://digital.stf.jus.br/publico/publicacoes'
@@ -23,6 +24,11 @@ data_split = data.split('/')
 dia = data_split[0]
 mes = data_split[1]
 ano = data_split[2]
+time_pd = f'{ano}-{mes}-{dia}'
+timestamp = pd.Timestamp(time_pd)
+name_day = timestamp.day_name()
+dia_da_semana = day_of_week(name_day)
+nome_mes = name_month(mes)
 
 validar = True
 while  validar:
@@ -33,10 +39,12 @@ while  validar:
     if opcao_site == '1':
         sleep(0.5)
         print('Você escolheu a opção Publicação')
+        opcao_texto = 'Publicação'
         validar = False
     elif opcao_site == '2':
         sleep(0.5)
         print('Você escolheu a opção Divulgação')
+        opcao_texto = 'Divulgação'
         validar = False
     elif opcao_site == '3':
         sleep(0.5)
@@ -61,8 +69,12 @@ chrome.get(url)
 sleep(5)
 
 # Abrir arquivo
-nome_arquivo = f'C:/sei-dj/stf/STF-{ano}-{mes}-{dia}.txt'
+nome_arquivo = f'C:/sei-dj/stfsite/STFSITE-{ano}.{mes}.{dia}.txt'
 with open(nome_arquivo, 'w', encoding='utf-8') as txt:
+    cabecalho = f'{opcao_texto}: {dia_da_semana}, {dia} de {nome_mes} de {ano} - STF - SITE'
+    site = 'SITE DO STF'
+    txt.write(cabecalho + '\n')
+    txt.write(site + '\n')
     # Definir a data
     elem = chrome.find_element_by_xpath(
                 '//*[@id="publicacoes"]/div/div/div[2]/form/div[1]/input'
@@ -98,7 +110,11 @@ with open(nome_arquivo, 'w', encoding='utf-8') as txt:
     for number in range(range_loop):
 
         # Pegar Conteúdo da página
-        elementos = chrome.find_elements_by_class_name('publicacoes')
+        try:
+            elementos = chrome.find_elements_by_class_name('publicacoes')
+        except:
+            elementos = chrome.find_elements_by_class_name('publicacoes')
+
     
 
         # Função que busca o texto escondido em shadow
@@ -116,6 +132,7 @@ with open(nome_arquivo, 'w', encoding='utf-8') as txt:
 
             
             # Pegar número do processo
+            
             processo = elem.find_element(By.CLASS_NAME, 'processo')
             text_processo = outer_html(processo)
 
@@ -125,19 +142,32 @@ with open(nome_arquivo, 'w', encoding='utf-8') as txt:
             txt.write(f'<P>{text_processo}' + "\n")
             
             # Pegar os dados do relator
-            relator = elem.find_element(By.CLASS_NAME, 'relator')
+            try:
+                relator = elem.find_element(By.CLASS_NAME, 'relator')
+            except:
+                relator = elem.find_element(By.CLASS_NAME, 'relator')
+
             text_relator = outer_html(relator)
             txt.write(text_relator + "\n")
 
             # Pegar a data do despacho
-            despacho = elem.find_element(
+            try:
+                despacho = elem.find_element(
+                    By.XPATH, '//*[@id="conteudo"]/div[2]/md-content/div[2]/div[1]/div[2]'
+                    )
+            except:
+                despacho = elem.find_element(
                 By.XPATH, '//*[@id="conteudo"]/div[2]/md-content/div[2]/div[1]/div[2]'
                 )
             text_despacho = outer_html(despacho)
             txt.write(text_despacho + "\n")
 
             # Pegar os dados dos envolvidos no processo
-            envolvidos = elem.find_elements(By.CLASS_NAME, 'envolvido')
+            try:
+                envolvidos = elem.find_elements(By.CLASS_NAME, 'envolvido')
+            except:
+                envolvidos = elem.find_elements(By.CLASS_NAME, 'envolvido')
+
             for envolvido in envolvidos:
                 text_envolvido = outer_html(envolvido)
                 txt.write(text_envolvido + "\n")
@@ -152,16 +182,30 @@ with open(nome_arquivo, 'w', encoding='utf-8') as txt:
                 "return arguments[0].shadowRoot", shadow_section
                 )
             shadow_root_id = shadow_root_dict['shadow-6066-11e4-a52e-4f735466cecf']
-            shadow_root = WebElement(chrome, shadow_root_id, w3c=True)
-            content_html = shadow_root.find_elements(
-                By.TAG_NAME, 'p'
-                )
+            try:
+                shadow_root = WebElement(chrome, shadow_root_id, w3c=True)
+            except:
+                shadow_root = WebElement(chrome, shadow_root_id, w3c=True)
 
+            try:
+                content_html = shadow_root.find_elements(
+                    By.TAG_NAME, 'p'
+                    )
+            except:
+                content_html = shadow_root.find_elements(
+                    By.TAG_NAME, 'p'
+                    )
+
+            
             for conteudo in content_html:
-
-                html_content = conteudo.get_attribute('outerHTML')
-                soup = BeautifulSoup(html_content, 'html.parser')
-                texto = soup.get_text()
+                # Desvio para corrigir problema de não carregar o HTML
+                texto = outer_html(conteudo)
+                # try:
+                #    html_content = conteudo.get_attribute('outerHTML')
+                # except:
+                #    html_content = conteudo.get_attribute('outerHTML')
+                # soup = BeautifulSoup(html_content, 'html.parser')
+                # texto = soup.get_text()
 
                 if len(texto) < 3:
                     continue
@@ -183,7 +227,7 @@ with open(nome_arquivo, 'w', encoding='utf-8') as txt:
         chrome.find_element_by_xpath(
             '//*[@id="conteudo"]/div[2]/md-content/div[1]/dir-pagination-controls/div/div[2]/div[2]/div/a[2]'
             ).click()
-        sleep(1)
+        sleep(2)
         
 
 chrome.close()
