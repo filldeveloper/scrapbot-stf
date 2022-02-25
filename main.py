@@ -7,6 +7,7 @@ from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 from functions import *
 from time import sleep
+from datetime import datetime
 import sys
 import os
 import math
@@ -17,6 +18,8 @@ from pprint import pprint
 url = 'https://digital.stf.jus.br/publico/publicacoes'
 PATH_DRIVER = 'chromedriver.exe'
 # Apresentar o número de registros encontrados e baixados
+
+date_hour_start = datetime.today().strftime('%d/%m/%Y %H:%M')
 
 data = input('Escolha uma data no padrão DD/MM/AAAA: ')
 print('')
@@ -69,8 +72,15 @@ chrome.get(url)
 sleep(5)
 
 # Abrir arquivo
-nome_arquivo = f'C:/sei-dj/stfsite/STFSITE-{ano}.{mes}.{dia}.txt'
-with open(nome_arquivo, 'w', encoding='utf-8') as txt:
+caminho_arquivo = f'C:/sei-dj/stfsite/STFSITE-{ano}.{mes}.{dia}.txt'
+nome_arquivo = f'STFSITE-{ano}.{mes}.{dia}.txt'
+caminho_resumo = f'C:/sei-dj/stfsite/STFSITE-{ano}.{mes}.{dia}-Resumo.txt'
+
+with open(caminho_resumo, 'w') as resumo:
+    first_row = f'STFSITE: {opcao_texto}: {dia}/{mes}/{ano} ARQUIVO: {nome_arquivo}'
+    resumo.write(first_row + '\n')
+
+with open(caminho_arquivo, 'w') as txt:
     cabecalho = f'{opcao_texto}: {dia_da_semana}, {dia} de {nome_mes} de {ano} - STF - SITE'
     site = 'SITE DO STF'
     txt.write(cabecalho + '\n')
@@ -95,14 +105,14 @@ with open(nome_arquivo, 'w', encoding='utf-8') as txt:
     registros = chrome.find_element_by_class_name('dataTables_info')
     html_registros = registros.get_attribute('outerHTML')
     soup_registros = BeautifulSoup(html_registros, 'html.parser')
-    num_registros = soup_registros.get_text().split(' ')[1]
+    num_processos = soup_registros.get_text().split(' ')[1]
 
     # Definir o numero de vezes que ira percorrer as paginas
-    range_loop = int(num_registros) / 10
+    range_loop = int(num_processos) / 10
     range_loop = math.ceil(range_loop)
 
     # Print on the screen the number of pages and registers
-    print(f'\nForam encontrados {num_registros} registros em {range_loop} páginas!')
+    print(f'\nForam encontrados {num_processos} registros em {range_loop} páginas!')
     
     
     # Loop a ser feito nas paginas
@@ -211,7 +221,19 @@ with open(nome_arquivo, 'w', encoding='utf-8') as txt:
                     continue
                 # método para remover o /xa0
                 novo_texto = unicodedata.normalize("NFKD", texto)
-                txt.write(novo_texto + "\n")
+                # pprint(texto)
+                try:
+                    txt.write(texto + "\n")
+                except:
+                    for x in texto:
+                        if x == '\u0303' or x == '\u0301' or x == '\x96' or x == '\u0327':
+                            
+                            continue
+                        elif x == '\u2212':
+                            x = '-'
+                        txt.write(x)
+                        
+
                 # print(novo_texto)
             
         # Display on the screen the number of pages recorded
@@ -228,7 +250,16 @@ with open(nome_arquivo, 'w', encoding='utf-8') as txt:
             '//*[@id="conteudo"]/div[2]/md-content/div[1]/dir-pagination-controls/div/div[2]/div[2]/div/a[2]'
             ).click()
         sleep(2)
-        
+
+with open(caminho_resumo, "a") as resumo:
+    date_hour_end = datetime.today().strftime('%d/%m/%Y %H:%M')
+    second_row = f'Início: {date_hour_start}h - Término: {date_hour_end}h'
+    resumo.write(second_row + '\n')
+    resumo.write(f'Total de Processos: Encontrados {num_processos} registros' + '\n')
+    resumo.write(f'Processos Baixados: {num_processos}' + '\n')
+    resumo.write('Situação: DOWNLOAD OK')
+
+
 
 chrome.close()
 print('\nPressione Ctrl + C para finalizar o programa!')
