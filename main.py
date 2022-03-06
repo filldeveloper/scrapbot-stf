@@ -75,11 +75,19 @@ sleep(5)
 caminho_arquivo = f'C:/sei-dj/stfsite/STFSITE-{ano}.{mes}.{dia}.txt'
 nome_arquivo = f'STFSITE-{ano}.{mes}.{dia}.txt'
 caminho_resumo = f'C:/sei-dj/stfsite/STFSITE-{ano}.{mes}.{dia}-Resumo.txt'
+caminho_num_processos = f'C:/sei-dj/stfsite/STFSITE-{ano}.{mes}.{dia}-NumProcessos.txt'
 
+# Gerando arquivo que contém somente os números dos processos
+num_processos_file = open(caminho_num_processos, 'w')
+num_processos_file.write(caminho_num_processos + '\n')
+num_processos_file.write('=' * 54 + '\n')
+
+# Gerando o arquivo de resumo
 with open(caminho_resumo, 'w') as resumo:
     first_row = f'STFSITE: {opcao_texto}: {dia}/{mes}/{ano} ARQUIVO: {nome_arquivo}'
     resumo.write(first_row + '\n')
 
+# Gerando o arquivo que contém os dados dos processos
 with open(caminho_arquivo, 'w') as txt:
     cabecalho = f'{opcao_texto}: {dia_da_semana}, {dia} de {nome_mes} de {ano} - STF - SITE'
     site = 'SITE DO STF'
@@ -117,6 +125,7 @@ with open(caminho_arquivo, 'w') as txt:
     
     # Loop a ser feito nas paginas
     count = 1
+    count_processos = 1
     for number in range(range_loop):
 
         # Pegar Conteúdo da página
@@ -150,7 +159,9 @@ with open(caminho_arquivo, 'w') as txt:
                 continue
             # Após os testes substituir o print por txt.write()
             txt.write(f'<P>{text_processo}' + "\n")
-            
+            num_processos_file.write(f'{count_processos}) <P>{text_processo} \n')
+            count_processos += 1
+
             # Pegar os dados do relator
             try:
                 relator = elem.find_element(By.CLASS_NAME, 'relator')
@@ -260,7 +271,8 @@ with open(caminho_resumo, "a") as resumo:
     resumo.write('Situação: DOWNLOAD OK')
 
 
-
+num_processos_file.write(f'\nNúmero de Processos = {count_processos - 1}')
+num_processos_file.close()
 chrome.close()
 print('\nPressione Ctrl + C para finalizar o programa!')
 
