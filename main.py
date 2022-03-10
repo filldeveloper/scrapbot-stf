@@ -21,6 +21,12 @@ PATH_DRIVER = 'chromedriver.exe'
 
 date_hour_start = datetime.today().strftime('%d/%m/%Y %H:%M')
 
+print('OPÇÕES DE PROGRAMAS: \n1 - Novo Arquivo \n2 - Arquivo existente\n')
+menu_opcoes = input('Escolha uma opção: ')
+if menu_opcoes == '2':
+    continuar_parametro()
+
+    
 data = input('Escolha uma data no padrão DD/MM/AAAA: ')
 print('')
 data_split = data.split('/')
@@ -87,193 +93,208 @@ with open(caminho_resumo, 'w') as resumo:
     first_row = f'STFSITE: {opcao_texto}: {dia}/{mes}/{ano} ARQUIVO: {nome_arquivo}'
     resumo.write(first_row + '\n')
 
-# Gerando o arquivo que contém os dados dos processos
-with open(caminho_arquivo, 'w') as txt:
-    cabecalho = f'{opcao_texto}: {dia_da_semana}, {dia} de {nome_mes} de {ano} - STF - SITE'
-    site = 'SITE DO STF'
-    txt.write(cabecalho + '\n')
-    txt.write(site + '\n')
-    # Definir a data
-    elem = chrome.find_element_by_xpath(
-                '//*[@id="publicacoes"]/div/div/div[2]/form/div[1]/input'
-                )
-    elem.send_keys(ano)
-    elem.send_keys(Keys.ARROW_LEFT, mes)
-    elem.send_keys(Keys.ARROW_LEFT)
-    elem.send_keys(Keys.ARROW_LEFT, dia)
+try:
+    # Gerando o arquivo que contém os dados dos processos
+    with open(caminho_arquivo, 'w') as txt:
+        cabecalho = f'{opcao_texto}: {dia_da_semana}, {dia} de {nome_mes} de {ano} - STF - SITE'
+        site = 'SITE DO STF'
+        txt.write(cabecalho + '\n')
+        txt.write(site + '\n')
+        # Definir a data
+        elem = chrome.find_element_by_xpath(
+                    '//*[@id="publicacoes"]/div/div/div[2]/form/div[1]/input'
+                    )
+        elem.send_keys(ano)
+        elem.send_keys(Keys.ARROW_LEFT, mes)
+        elem.send_keys(Keys.ARROW_LEFT)
+        elem.send_keys(Keys.ARROW_LEFT, dia)
 
-    sleep(2)
-    # Escolher divulgação
-    chrome.find_element_by_id('select_value_label_0').click()
-    sleep(2)
-    chrome.find_element_by_id(f'select_option_{opcao_site}').click()
-    sleep(3)
+        sleep(2)
+        # Escolher divulgação
+        chrome.find_element_by_id('select_value_label_0').click()
+        sleep(2)
+        chrome.find_element_by_id(f'select_option_{opcao_site}').click()
+        sleep(3)
 
-    # Pegar quantos registros foram encontrados
-    registros = chrome.find_element_by_class_name('dataTables_info')
-    html_registros = registros.get_attribute('outerHTML')
-    soup_registros = BeautifulSoup(html_registros, 'html.parser')
-    num_processos = soup_registros.get_text().split(' ')[1]
+        # Pegar quantos registros foram encontrados
+        registros = chrome.find_element_by_class_name('dataTables_info')
+        html_registros = registros.get_attribute('outerHTML')
+        soup_registros = BeautifulSoup(html_registros, 'html.parser')
+        num_processos = soup_registros.get_text().split(' ')[1]
 
-    # Definir o numero de vezes que ira percorrer as paginas
-    range_loop = int(num_processos) / 10
-    range_loop = math.ceil(range_loop)
+        # Definir o numero de vezes que ira percorrer as paginas
+        range_loop = int(num_processos) / 10
+        range_loop = math.ceil(range_loop)
 
-    # Print on the screen the number of pages and registers
-    print(f'\nForam encontrados {num_processos} registros em {range_loop} páginas!')
-    
-    
-    # Loop a ser feito nas paginas
-    count = 1
-    count_processos = 1
-    for number in range(range_loop):
+        # Print on the screen the number of pages and registers
+        print(f'\nForam encontrados {num_processos} registros em {range_loop} páginas!')
+        
+        
+        # Loop a ser feito nas paginas
+        count = 1
+        count_processos = 1
+        for number in range(range_loop):
 
-        # Pegar Conteúdo da página
-        try:
-            elementos = chrome.find_elements_by_class_name('publicacoes')
-        except:
-            elementos = chrome.find_elements_by_class_name('publicacoes')
-
-    
-
-        # Função que busca o texto escondido em shadow
-        # shadow_section = chrome.find_elements_by_class_name(
-        #     'shadow'
-        #     )
-
-        for elem in elementos:
-
-            # if 'Apresentando de' in cabecalho and 'registros' in cabecalho:
-            #     continue
-            
-            # método para remover o /xa0
-            # novo_cabecalho = unicodedata.normalize("NFKD", cabecalho)
-
-            
-            # Pegar número do processo
-            
-            processo = elem.find_element(By.CLASS_NAME, 'processo')
-            text_processo = outer_html(processo)
-
-            if not text_processo:
-                continue
-            # Após os testes substituir o print por txt.write()
-            txt.write(f'<P>{text_processo}' + "\n")
-            num_processos_file.write(f'{count_processos}) <P>{text_processo} \n')
-            count_processos += 1
-
-            # Pegar os dados do relator
+            # Pegar Conteúdo da página
             try:
-                relator = elem.find_element(By.CLASS_NAME, 'relator')
+                elementos = chrome.find_elements_by_class_name('publicacoes')
             except:
-                relator = elem.find_element(By.CLASS_NAME, 'relator')
+                elementos = chrome.find_elements_by_class_name('publicacoes')
 
-            text_relator = outer_html(relator)
-            txt.write(text_relator + "\n")
+        
 
-            # Pegar a data do despacho
-            try:
-                despacho = elem.find_element(
+            # Função que busca o texto escondido em shadow
+            # shadow_section = chrome.find_elements_by_class_name(
+            #     'shadow'
+            #     )
+
+            for elem in elementos:
+
+                # if 'Apresentando de' in cabecalho and 'registros' in cabecalho:
+                #     continue
+                
+                # método para remover o /xa0
+                # novo_cabecalho = unicodedata.normalize("NFKD", cabecalho)
+
+                
+                # Pegar número do processo
+                
+                processo = elem.find_element(By.CLASS_NAME, 'processo')
+                text_processo = outer_html(processo)
+
+                if not text_processo:
+                    continue
+                # Após os testes substituir o print por txt.write()
+                txt.write(f'<P>{text_processo}' + "\n")
+
+                # Pegar os dados do relator
+                try:
+                    relator = elem.find_element(By.CLASS_NAME, 'relator')
+                except:
+                    relator = elem.find_element(By.CLASS_NAME, 'relator')
+
+                text_relator = outer_html(relator)
+                txt.write(text_relator + "\n")
+
+                # Pegar a data do despacho
+                try:
+                    despacho = elem.find_element(
+                        By.XPATH, '//*[@id="conteudo"]/div[2]/md-content/div[2]/div[1]/div[2]'
+                        )
+                except:
+                    despacho = elem.find_element(
                     By.XPATH, '//*[@id="conteudo"]/div[2]/md-content/div[2]/div[1]/div[2]'
                     )
-            except:
-                despacho = elem.find_element(
-                By.XPATH, '//*[@id="conteudo"]/div[2]/md-content/div[2]/div[1]/div[2]'
-                )
-            text_despacho = outer_html(despacho)
-            txt.write(text_despacho + "\n")
+                text_despacho = outer_html(despacho)
+                txt.write(text_despacho + "\n")
 
-            # Pegar os dados dos envolvidos no processo
-            try:
-                envolvidos = elem.find_elements(By.CLASS_NAME, 'envolvido')
-            except:
-                envolvidos = elem.find_elements(By.CLASS_NAME, 'envolvido')
-
-            for envolvido in envolvidos:
-                text_envolvido = outer_html(envolvido)
-                txt.write(text_envolvido + "\n")
-            
-            try:
-                # Função que busca o texto escondido em shadow
-                shadow_section = elem.find_element_by_class_name('shadow')
-            except:
-                continue
-
-            shadow_root_dict = chrome.execute_script(
-                "return arguments[0].shadowRoot", shadow_section
-                )
-            shadow_root_id = shadow_root_dict['shadow-6066-11e4-a52e-4f735466cecf']
-            try:
-                shadow_root = WebElement(chrome, shadow_root_id, w3c=True)
-            except:
-                shadow_root = WebElement(chrome, shadow_root_id, w3c=True)
-
-            try:
-                content_html = shadow_root.find_elements(
-                    By.TAG_NAME, 'p'
-                    )
-            except:
-                content_html = shadow_root.find_elements(
-                    By.TAG_NAME, 'p'
-                    )
-
-            
-            for conteudo in content_html:
-                # Desvio para corrigir problema de não carregar o HTML
-                texto = outer_html(conteudo)
-                # try:
-                #    html_content = conteudo.get_attribute('outerHTML')
-                # except:
-                #    html_content = conteudo.get_attribute('outerHTML')
-                # soup = BeautifulSoup(html_content, 'html.parser')
-                # texto = soup.get_text()
-
-                if len(texto) < 3:
-                    continue
-                # método para remover o /xa0
-                novo_texto = unicodedata.normalize("NFKD", texto)
-                # pprint(texto)
+                # Pegar os dados dos envolvidos no processo
                 try:
-                    txt.write(texto + "\n")
+                    envolvidos = elem.find_elements(By.CLASS_NAME, 'envolvido')
                 except:
-                    for x in texto:
-                        if x == '\u0303' or x == '\u0301' or x == '\x96' or x == '\u0327' or x == '\u0315':
-                            #print(x)
-                            continue
-                        elif x == '\u2212':
-                            x = '-'
-                        txt.write(x)
-                        
+                    envolvidos = elem.find_elements(By.CLASS_NAME, 'envolvido')
 
-                # print(novo_texto)
+                for envolvido in envolvidos:
+                    text_envolvido = outer_html(envolvido)
+                    txt.write(text_envolvido + "\n")
+                
+                try:
+                    # Função que busca o texto escondido em shadow
+                    shadow_section = elem.find_element_by_class_name('shadow')
+                except:
+                    continue
+
+                shadow_root_dict = chrome.execute_script(
+                    "return arguments[0].shadowRoot", shadow_section
+                    )
+                shadow_root_id = shadow_root_dict['shadow-6066-11e4-a52e-4f735466cecf']
+                try:
+                    shadow_root = WebElement(chrome, shadow_root_id, w3c=True)
+                except:
+                    shadow_root = WebElement(chrome, shadow_root_id, w3c=True)
+
+                try:
+                    content_html = shadow_root.find_elements(
+                        By.TAG_NAME, 'p'
+                        )
+                except:
+                    content_html = shadow_root.find_elements(
+                        By.TAG_NAME, 'p'
+                        )
+
+                
+                for conteudo in content_html:
+                    # Desvio para corrigir problema de não carregar o HTML
+                    texto = outer_html(conteudo)
+                    # try:
+                    #    html_content = conteudo.get_attribute('outerHTML')
+                    # except:
+                    #    html_content = conteudo.get_attribute('outerHTML')
+                    # soup = BeautifulSoup(html_content, 'html.parser')
+                    # texto = soup.get_text()
+
+                    if len(texto) < 3:
+                        continue
+                    # método para remover o /xa0
+                    novo_texto = unicodedata.normalize("NFKD", texto)
+                    # pprint(texto)
+                    try:
+                        txt.write(texto + "\n")
+                    except:
+                        for x in texto:
+                            if x == '\u0303' or x == '\u0301' or x == '\x96' or x == '\u0327' or x == '\u0315':
+                                #print(x)
+                                continue
+                            elif x == '\u2212':
+                                x = '-'
+                            txt.write(x)
+                            
+
+                    # print(novo_texto)
+                num_processos_file.write(f'{count_processos}) <P>{text_processo} \n')
+                count_processos += 1
+            # Display on the screen the number of pages recorded
+            print(f'Página {count} gravada!')
+
+            # Condition to don't click the next button in case of last page
+            if count == range_loop:
+                print('\nTodos os registros gravados')
+                continue
             
-        # Display on the screen the number of pages recorded
-        print(f'Página {count} gravada!')
+            count += 1
+            # Function to press the next button
+            chrome.find_element_by_xpath(
+                '//*[@id="conteudo"]/div[2]/md-content/div[1]/dir-pagination-controls/div/div[2]/div[2]/div/a[2]'
+                ).click()
+            sleep(2)
 
-        # Condition to don't click the next button in case of last page
-        if count == range_loop:
-            print('\nTodos os registros gravados')
-            continue
-        
-        count += 1
-        # Function to press the next button
-        chrome.find_element_by_xpath(
-            '//*[@id="conteudo"]/div[2]/md-content/div[1]/dir-pagination-controls/div/div[2]/div[2]/div/a[2]'
-            ).click()
-        sleep(2)
-
-with open(caminho_resumo, "a") as resumo:
-    date_hour_end = datetime.today().strftime('%d/%m/%Y %H:%M')
-    second_row = f'Início: {date_hour_start}h - Término: {date_hour_end}h'
-    resumo.write(second_row + '\n')
-    resumo.write(f'Total de Processos: Encontrados {num_processos} registros' + '\n')
-    resumo.write(f'Processos Baixados: {num_processos}' + '\n')
-    resumo.write('Situação: DOWNLOAD OK')
+    with open(caminho_resumo, "a") as resumo:
+        date_hour_end = datetime.today().strftime('%d/%m/%Y %H:%M')
+        second_row = f'Início: {date_hour_start}h - Término: {date_hour_end}h'
+        resumo.write(second_row + '\n')
+        resumo.write(f'Total de Processos: Encontrados {num_processos} registros' + '\n')
+        resumo.write(f'Processos Baixados: {num_processos}' + '\n')
+        resumo.write('Situação: DOWNLOAD OK')
 
 
-num_processos_file.write(f'\nNúmero de Processos = {count_processos - 1}')
-num_processos_file.close()
-chrome.close()
-print('\nPressione Ctrl + C para finalizar o programa!')
+    num_processos_file.write(f'\nNúmero de Processos = {count_processos - 1}')
+    num_processos_file.close()
+    chrome.close()
+    print('\nPressione Ctrl + C para finalizar o programa!')
 
+except Exception as err:
+    with open(caminho_resumo, "a") as resumo:
+        date_hour_end = datetime.today().strftime('%d/%m/%Y %H:%M')
+        second_row = f'Início: {date_hour_start}h - Término: {date_hour_end}h'
+        resumo.write(second_row + '\n')
+        resumo.write(f'Total de Processos: Encontrados {num_processos} registros' + '\n')
+        resumo.write(f'Processos Baixados: {count_processos - 1}' + '\n')
+        resumo.write('Situação: DOWNLOAD INCOMPLETO')
+
+
+    num_processos_file.write(f'\nNúmero de Processos = {count_processos - 1}')
+    num_processos_file.close()
+    chrome.close()
+    print(err)
+    print('\nPressione Ctrl + C para finalizar o programa!')
 # Developed by Felipe Barreto da Silva
