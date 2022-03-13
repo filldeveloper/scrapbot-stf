@@ -242,8 +242,12 @@ try:
                         txt.write(texto + "\n")
                     except:
                         for x in texto:
-                            if x == '\u0303' or x == '\u0301' or x == '\x96' or x == '\u0327' or x == '\u0315':
+
+                            if x == '\u0303' or x == '\u0301' or x == '\x96' or x == '\u0327' or x == '\u0315' \
+                            or x == '\u201f' or x == '\u02da':
                                 #print(x)
+
+                            
                                 continue
                             elif x == '\u2212':
                                 x = '-'
