@@ -26,7 +26,6 @@ menu_opcoes = input('Escolha uma opção: ')
 if menu_opcoes == '2':
     continuar_parametro()
 
-    
 data = input('Escolha uma data no padrão DD/MM/AAAA: ')
 print('')
 data_split = data.split('/')
@@ -64,13 +63,11 @@ while  validar:
         sleep(0.5)
         print('\033[31m'+'Opção Inválida!'+'\033[0;0m'+'\n')
     
-
 options = webdriver.ChromeOptions()
 options.add_argument('--log-level=3')
 # options.add_argument("--headless")
 # options.add_argument('--no-sandbox')
 # options.add_argument('--disable-dev-shm-usage')
-
 
 chrome = webdriver.Chrome(options=options)
 chrome.get(url)
@@ -129,7 +126,6 @@ try:
         # Print on the screen the number of pages and registers
         print(f'\nForam encontrados {num_processos} registros em {range_loop} páginas!')
         
-        
         # Loop a ser feito nas paginas
         count = 1
         count_processos = 1
@@ -140,8 +136,6 @@ try:
                 elementos = chrome.find_elements_by_class_name('publicacoes')
             except:
                 elementos = chrome.find_elements_by_class_name('publicacoes')
-
-        
 
             # Função que busca o texto escondido em shadow
             # shadow_section = chrome.find_elements_by_class_name(
@@ -221,7 +215,6 @@ try:
                     content_html = shadow_root.find_elements(
                         By.TAG_NAME, 'p'
                         )
-
                 
                 for conteudo in content_html:
                     # Desvio para corrigir problema de não carregar o HTML
@@ -244,7 +237,7 @@ try:
                         for x in texto:
 
                             if x == '\u0303' or x == '\u0301' or x == '\x96' or x == '\u0327' or x == '\u0315' \
-                            or x == '\u201f' or x == '\u02da':
+                            or x == '\u201f' or x == '\u02da' or x == '\u0300':
                                 #print(x)
 
                             
@@ -280,7 +273,6 @@ try:
         resumo.write(f'Processos Baixados: {num_processos}' + '\n')
         resumo.write('Situação: DOWNLOAD OK')
 
-
     num_processos_file.write(f'\nNúmero de Processos = {count_processos - 1}')
     num_processos_file.close()
     chrome.close()
@@ -294,7 +286,6 @@ except Exception as err:
         resumo.write(f'Total de Processos: Encontrados {num_processos} registros' + '\n')
         resumo.write(f'Processos Baixados: {count_processos - 1}' + '\n')
         resumo.write('Situação: DOWNLOAD INCOMPLETO')
-
 
     num_processos_file.write(f'\nNúmero de Processos = {count_processos - 1}')
     num_processos_file.close()
