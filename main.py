@@ -237,7 +237,7 @@ try:
                         for x in texto:
 
                             if x == '\u0303' or x == '\u0301' or x == '\x96' or x == '\u0327' or x == '\u0315' \
-                            or x == '\u201f' or x == '\u02da' or x == '\u0300' or x == '\u02c8':
+                            or x == '\u201f' or x == '\u02da' or x == '\u0300' or x == '\u02c8' or x == '\u2215':
                                 #print(x)
 
                             
