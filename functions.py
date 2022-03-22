@@ -161,7 +161,7 @@ def scrap_pagina(chrome, txt, txt_num_processos, elem, num_processo_parado):
             except:
                 for x in texto:
                     if x == '\u0303' or x == '\u0301' or x == '\x96' or x == '\u0327' or x == '\u0315' \
-                    or x == '\u201f' or x == '\u02da' or x == '\u0300':
+                    or x == '\u201f' or x == '\u02da' or x == '\u0300' or x == '\u02c8':
                         continue
                     elif x == '\u2212':
                         x = '-'
