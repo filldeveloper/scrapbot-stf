@@ -101,6 +101,8 @@ try:
         elem = chrome.find_element_by_xpath(
                     '//*[@id="publicacoes"]/div/div/div[2]/form/div[1]/input'
                     )
+                    
+        elem.send_keys(ano)
         elem.send_keys(ano)
         elem.send_keys(Keys.ARROW_LEFT, mes)
         elem.send_keys(Keys.ARROW_LEFT)
@@ -237,7 +239,9 @@ try:
                         for x in texto:
 
                             if x == '\u0303' or x == '\u0301' or x == '\x96' or x == '\u0327' or x == '\u0315' \
-                            or x == '\u201f' or x == '\u02da' or x == '\u0300' or x == '\u02c8' or x == '\u2215':
+                            or x == '\u201f' or x == '\u02da' or x == '\u0300' or x == '\u02c8' or x == '\u2215' \
+                            or x == '\u25aa' or x == '\u2012' or x =='\u202f' or x == '\u0302' or x == '\u030a' \
+                            or x == '\u03b2':
                                 #print(x)
 
                             
